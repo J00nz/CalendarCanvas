@@ -246,9 +246,18 @@ var CanvasMouseEnd = function (e) {
     if (isDbl) {
         isDbl = false;
         clearTimeout(dblScrpt);
-        var nxt = viewTime - (viewTime % 100) + 100;
-        if (nxt > maxZoom) { nxt = maxZoom; }
-        AnimateToNext(nxt);
+        var nxt;
+        var tmpDelta = viewTime - (viewTime % 100);
+
+        if (selectY < topOfst) {
+                nxt = tmpDelta - 100;
+                if (nxt < 0) { nxt = 0; }
+                AnimateToLast(nxt);
+        } else {
+                var nxt = tmpDelta + 100;
+                if (nxt > maxZoom) { nxt = maxZoom; }
+                AnimateToNext(nxt);
+        }
     } else {
         isDbl = true;
         clearTimeout(dblScrpt);
