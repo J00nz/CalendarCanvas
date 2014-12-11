@@ -99,6 +99,10 @@ $(document).ready(function () {
     $(canvas).bind("mousedown", CanvasMouseDown);
     $(canvas).bind("mousemove", CanvasMouseMove);
     $(canvas).bind('mouseup', CanvasMouseEnd);
+    
+    $(canvas).bind('touchstart', CanvasTouchStart);
+    $(canvas).bind('touchmove', CanvasTouchMove);
+    $(canvas).bind('touchend', CanvasTouchEnd);
 
     document.body.onmouseout = CanvasMouseOut;
 
@@ -303,6 +307,50 @@ var CanvasMouseOut = function (e) {
         }
     }
 
+    DrawCalendar();
+}
+
+var CanvasTouchStart = function (e) {
+
+    if (window.navigator.msPointerEnabled) {
+        touch = e;
+    } else {
+        touch = e.originalEvent.touches[0];
+    }
+    lastPinchWidth = -1;
+    
+    CanvasMouseDown(touch);
+
+    return touch;
+};
+
+var CanvasTouchMove = function (event) {
+    if (event.originalEvent.touches.length === 1) {
+        CanvasMouseMove(event.originalEvent.touches[0]);
+    } else if (event.originalEvent.touches.length > 1) {
+        var newX1 = event.originalEvent.touches[0].pageX, newY1 = event.originalEvent.touches[0].pageY, newX2 = event.originalEvent.touches[1].pageX, newY2 = event.originalEvent.touches[1].pageY;
+        var newPinchWidth = Math.sqrt(Math.pow(newX2 - newX1, 2) + Math.pow(newY2 - newY1, 2));
+        var middleX = ((newX1 + newX2) / 2) - infoWidth;
+        if (lastPinchWidth >= 0) {
+            var deltaWidth = newPinchWidth - lastPinchWidth;
+            UpdateViewTime(viewTime + (deltaWidth / 2));
+        }
+
+        lastPinchWidth = newPinchWidth;
+    }
+};
+
+var CanvasTouchEnd = function(e) {
+    //var evt = e.originalEvent.changedTouches[0];
+    //CanvasMouseEnd(evt);
+    
+    mouseDown = false;
+    isZooming = false;
+    
+    if (viewTime < day) {
+        StartAnimateZoom(viewTime);
+    }
+    
     DrawCalendar();
 }
 
