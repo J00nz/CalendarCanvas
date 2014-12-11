@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html style="overflow:hidden; width: 100vw; height: 100vh;">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
     <title>Canvas Calendar</title>
     <script type="text/javascript" src="./CalenderEngine/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="./CalenderEngine/CalendarEngine.js"></script>
     <script type="text/javascript" src="./CalenderEngine/CalendarScripts.js"></script>
 </head>
-<body>
+<body style="margin:0;">
     <input type="hidden" id="jsActs" >
-    <div style="width: 830px; height: 750px; padding: 0; margin: 0; background-color: #808080;">
-        <canvas class="calendarCanvas" style="opacity: 1.0; width: 100%; height: 100%;">
+    <div style="width: 100vw; height: 100vh; padding: 0; margin: 0; background-color: #808080;">
+        <canvas class="calendarCanvas" style="opacity: 1.0; width: 100vw; height: 100vh;">
         </canvas>
     </div>
 </body>
