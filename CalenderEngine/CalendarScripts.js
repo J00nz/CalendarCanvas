@@ -107,6 +107,10 @@ $(document).ready(function () {
     document.body.onmouseout = CanvasMouseOut;
 
     OnComplete();
+
+    document.addEventListener('touchstart', function(event){
+       event.preventDefault();
+    });
 });
 
 function OnComplete() {
@@ -324,10 +328,13 @@ var CanvasTouchStart = function (e) {
     return touch;
 };
 
+var wasMulti = false;
+
 var CanvasTouchMove = function (event) {
     if (event.originalEvent.touches.length === 1) {
         CanvasMouseMove(event.originalEvent.touches[0]);
     } else if (event.originalEvent.touches.length > 1) {
+        wasMulti = true;
         var newX1 = event.originalEvent.touches[0].pageX, newY1 = event.originalEvent.touches[0].pageY, newX2 = event.originalEvent.touches[1].pageX, newY2 = event.originalEvent.touches[1].pageY;
         var newPinchWidth = Math.sqrt(Math.pow(newX2 - newX1, 2) + Math.pow(newY2 - newY1, 2));
         //var middleX = ((newX1 + newX2) / 2) - infoWidth;
@@ -348,17 +355,21 @@ var CanvasTouchMove = function (event) {
 };
 
 var CanvasTouchEnd = function(e) {
-    //var evt = e.originalEvent.changedTouches[0];
-    //CanvasMouseEnd(evt);
+    if (!wasMulti) {
+        var evt = e.originalEvent.changedTouches[0];
+        CanvasMouseEnd(evt);
+    } else {
+        wasMulti = false;
     
-    mouseDown = false;
-    isZooming = false;
+        mouseDown = false;
+        isZooming = false;
     
-    if (viewTime < day) {
-        StartAnimateZoom(viewTime);
+        if (viewTime < day) {
+            StartAnimateZoom(viewTime);
+        }
+    
+        DrawCalendar();
     }
-    
-    DrawCalendar();
 }
 
 var dayClick = function (e) {
