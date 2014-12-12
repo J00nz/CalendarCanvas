@@ -90,7 +90,7 @@ $(document).ready(function () {
 
     canvas = $('.calendarCanvas')[0];
 
-    //InitiateTestData();
+    InitiateTestData();
 
     var actData = $("#jsActs").val();
 
@@ -107,6 +107,10 @@ $(document).ready(function () {
     document.body.onmouseout = CanvasMouseOut;
 
     OnComplete();
+
+    document.addEventListener('touchstart', function(event){
+       event.preventDefault();
+    });
 });
 
 function OnComplete() {
@@ -205,7 +209,7 @@ var CanvasMouseDown = function (e) {
 
     //clicked.Click();
 
-    e.preventDefault();
+    e.preventDefault && e.preventDefault();
 }
 var Totalmove = 0, TotalmoveX = 0, TotalmoveY = 0;
 var LastX = 0, LastY = 0;
@@ -324,16 +328,26 @@ var CanvasTouchStart = function (e) {
     return touch;
 };
 
+var wasMulti = false;
+
 var CanvasTouchMove = function (event) {
     if (event.originalEvent.touches.length === 1) {
         CanvasMouseMove(event.originalEvent.touches[0]);
     } else if (event.originalEvent.touches.length > 1) {
+        wasMulti = true;
         var newX1 = event.originalEvent.touches[0].pageX, newY1 = event.originalEvent.touches[0].pageY, newX2 = event.originalEvent.touches[1].pageX, newY2 = event.originalEvent.touches[1].pageY;
         var newPinchWidth = Math.sqrt(Math.pow(newX2 - newX1, 2) + Math.pow(newY2 - newY1, 2));
-        var middleX = ((newX1 + newX2) / 2) - infoWidth;
+        //var middleX = ((newX1 + newX2) / 2) - infoWidth;
         if (lastPinchWidth >= 0) {
             var deltaWidth = newPinchWidth - lastPinchWidth;
-            UpdateViewTime(viewTime + (deltaWidth / 2));
+
+            viewTime += (deltaWidth / 2);
+            if (viewTime < 0) { viewTime = 0; }
+            if (viewTime > maxZoom) { viewTime = maxZoom; }
+            if (viewTime < day) { topMinuteOffset = 0; }
+
+            DrawCalendar();
+            isZooming = true;
         }
 
         lastPinchWidth = newPinchWidth;
@@ -341,17 +355,21 @@ var CanvasTouchMove = function (event) {
 };
 
 var CanvasTouchEnd = function(e) {
-    //var evt = e.originalEvent.changedTouches[0];
-    //CanvasMouseEnd(evt);
+    if (!wasMulti) {
+        var evt = e.originalEvent.changedTouches[0];
+        CanvasMouseEnd(evt);
+    } else {
+        wasMulti = false;
     
-    mouseDown = false;
-    isZooming = false;
+        mouseDown = false;
+        isZooming = false;
     
-    if (viewTime < day) {
-        StartAnimateZoom(viewTime);
+        if (viewTime < day) {
+            StartAnimateZoom(viewTime);
+        }
+    
+        DrawCalendar();
     }
-    
-    DrawCalendar();
 }
 
 var dayClick = function (e) {
@@ -373,13 +391,18 @@ function InitiateTestData() {
     //6307200
     // 525600
 
-    Acts.push(new Act(6407200, 6407320));
+    /*Acts.push(new Act(6407200, 6407320));
 
     Acts.push(new Act(6507200, 6507320));
 
     Acts.push(new Act(6607200, 6607320));
 
-    Acts.push(new Act(6707200, 6707320));
+    Acts.push(new Act(6707200, 6707320));*/
+
+    var act = new Act(7878000, 7878120);
+    act.style = "0,255,0";
+
+    Acts.push(act)
 }
 
 
